@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "electron": "^35.1.2"
+  },
+  "dependencies": {
+    "jest": "^29.7.0"
   }
 }
