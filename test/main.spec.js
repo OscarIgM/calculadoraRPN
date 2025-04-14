@@ -1,5 +1,4 @@
 const calculadora= require ('./calculadora.js');
-
 describe('suma', () => {
     it('debe sumar dos numeros', () => {
         expect(calculadora.suma(1, 2)).toBe(3);
