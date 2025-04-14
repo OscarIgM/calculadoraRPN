@@ -1,6 +1,9 @@
-
-
-
+function hasEnoughOperands(count) {
+    if (count < 2) {
+        return "falta operandos para realizar el calculo";
+    }
+    return true;
+}
 
 
 function performOperation(op) {
@@ -60,4 +63,4 @@ function divide(a, b) {
     return a / b;
 }
 
-module.exports = { add, subtract, multiply, divide};
+module.exports = { add, subtract, multiply, divide,hasEnoughOperands};

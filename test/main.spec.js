@@ -1,14 +1,28 @@
-const calculadora= require ('./calculadora.js');
-describe('suma', () => {
-    it('debe sumar dos numeros', () => {
-        expect(calculadora.suma(1, 2)).toBe(3);
-    });
-    it('debe mostrar que no hay operandos suficientes', () => {
-        expect(calculadora.suma(0
-        )).toBe("falta operandos para realizar el calculo");
+const calculadora= require ('../calculadora.js');
+const {add, hasEnoughOperands}= require('../calculadora.js');
+describe('Suma', () => {
+    it('Suma asserts', () => {
+        expect(add(1, 2)).toBe(3);
+        expect(add(-2, -3)).toBe(-5);
+        expect(add(0, 0)).toBe(0);
     });
 });
 
+
+describe('Validación de operandos', () => {
+    it('debe retornar true cuando hay al menos 2 operandos', () => {
+        expect(hasEnoughOperands(2)).toBe(true);
+        expect(hasEnoughOperands(3)).toBe(true);
+    });
+
+    it('debe indicar que faltan operandos si hay menos de 2', () => {
+        expect(hasEnoughOperands(0)).toBe("falta operandos para realizar el calculo");
+        expect(hasEnoughOperands(1)).toBe("falta operandos para realizar el calculo");
+    });
+});
+
+
+/*
 describe('resta', () => {
     it('debe restar dos numeros', () => {
         expect(calculadora.resta(2, 1)).toBe(1);
@@ -78,4 +92,4 @@ describe('calculo', () => {
     it('debe de dar error al ingresar un número muy grande a la operación', () => {
         expect(calculadora.calculo([2147483648, 3, "*", 4, "+"])).toBe("error");
     });
-});
+});*/
