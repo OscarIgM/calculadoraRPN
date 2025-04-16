@@ -1,4 +1,53 @@
 <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <link rel="stylesheet" href="style.css">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <div class="calculator-container">
+        <div class="calculator">
+            <div class="display">
+                <div class="stack-display" id="stack-display"></div>
+                <div class="input" id="input"></div>
+            </div>
+            <div class="buttons">
+                <button class="digit" onclick="appendDigit(7)">7</button>
+                <button class="digit" onclick="appendDigit(8)">8</button>
+                <button class="digit" onclick="appendDigit(9)">9</button>
+                <button class="operation" onclick="performOperation('/')">/</button>
+                
+                <button class="digit" onclick="appendDigit(4)">4</button>
+                <button class="digit" onclick="appendDigit(5)">5</button>
+                <button class="digit" onclick="appendDigit(6)">6</button>
+                <button class="operation" onclick="performOperation('*')">×</button>
+                
+                <button class="digit" onclick="appendDigit(1)">1</button>
+                <button class="digit" onclick="appendDigit(2)">2</button>
+                <button class="digit" onclick="appendDigit(3)">3</button>
+                <button class="operation" onclick="performOperation('-')">−</button>
+                
+                <button class="digit zero" onclick="appendDigit(0)">0</button>
+                <button class="function" onclick="changeSign()">±</button>
+                <button class="operation" onclick="performOperation('+')">+</button>
+                
+                <button class="function" onclick="dropItem()">DROP</button>
+                <button class="function" onclick="swapItems()">SWAP</button>
+                <button class="function" onclick="duplicateItem()">DUP</button>
+                <button class="function" onclick="clearAll()">AC</button>
+                
+                <button class="enter" onclick="enterNumber()">ENTER</button>
+                <button class="function" onclick="clearInput()">⌫</button>
+            </div>
+        </div>
+        <div class="info">
+            <p>RPN Calculator: Enter numbers first, then operations</p>
+        </div>
+        <script src="calculadora.js"></script><!-- enlace a la calculadora-->
+    </div>
 <html>
 <head>
   <meta charset="UTF-8">

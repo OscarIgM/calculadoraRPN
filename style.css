@@ -119,3 +119,7 @@ button:active {
     text-align: center;
     font-size: 14px;
 }
+
+.zero {
+    grid-column: span 2;
+}
