@@ -28,7 +28,6 @@ describe('Validación de operandos', () => {
         expect(hasEnoughOperands(1)).toBe("falta operandos para realizar el calculo");
     });
 });
-
 describe('Evaluación de RPN con números negativos', () => {
     it('debe evaluar correctamente [1, -2, "+", 3, "*", -4, "+"]', () => {
         const expression = [1, -2, "+", 3, "*", -4, "+"];

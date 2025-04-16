@@ -94,13 +94,14 @@ describe('Operaciones matemáticas básicas', () => {
 //Pruebas de validador de cantidad de operandos
 describe('Validación de operandos', () => {
     test('Debe retornar true con 2 operandos', () => {
-        setStack([1, 2]);
-        expect(hasEnoughOperands()).toBe(true);
+       const stack= setStack([1, 2]);
+       
+        expect(hasEnoughOperands(stack.length)).toBe(true);
     });
 
     test('Debe retornar false con menos de 2 operandos', () => {
         setStack([1]);
-        expect(hasEnoughOperands()).toBe(false);
+        expect(hasEnoughOperands()).toBe("falta operandos para realizar el calculo");
     });
 });
 
@@ -145,11 +146,16 @@ describe('Operaciones realizadas sobre el contenido de la pila', () => {
         setStack([4, 0]);
         setInputBuffer('');
         global.alert = jest.fn();
-        performOperation('/');
+    
+        try {
+            performOperation('/');
+        } catch (e) {
+            expect(e.message).toBe("División por cero");
+        }
+    
         expect(getStack()).toEqual([4, 0]);
-        expect(global.alert).toHaveBeenCalledWith("Error: División por cero");
     });
-
+    
     test('Operador distinto a los 4 operadores basicos alerta y no modifica la pila', () => {
         setStack([1, 2]);
         setInputBuffer('');

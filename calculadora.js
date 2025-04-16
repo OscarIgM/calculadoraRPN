@@ -2,14 +2,18 @@ let stack = [];
 let inputBuffer = "";
 function updateDisplay() {
     const stackDisplay = document.getElementById("stack-display");
-    stackDisplay.textContent = stack.join(" ");
+    if (stackDisplay) {
+        stackDisplay.textContent = stack.join(" ");
+    }
 
     updateInputDisplay();
 }
 
 function updateInputDisplay() {
     const inputDisplay = document.getElementById("input");
-    inputDisplay.textContent = inputBuffer;
+    if (inputDisplay) {
+        inputDisplay.textContent = inputBuffer;
+    }
 }
 
 function appendDigit(digit) {
@@ -90,16 +94,16 @@ function duplicateItem() {
     updateDisplay();
 }
 
-function hasEnoughOperands() {
-    return stack.length >= 2;
+function hasEnoughOperands(count) {
+    if (count >= 2) return true;
+    return "falta operandos para realizar el calculo";
 }
 
 function performOperation(op) {
     enterNumber(); 
 
-    if (!hasEnoughOperands()) {
-        alert("Faltan operandos para realizar el cálculo.");
-        return;
+    if (!hasEnoughOperands(stack.length)) {
+        throw new Error("falta operandos para realizar el calculo");
     }
 
     const b = stack.pop();
@@ -118,41 +122,42 @@ function performOperation(op) {
             break;
         case '/':
             if (b === 0) {
-                alert("Error: División por cero");
                 stack.push(a, b); 
-                return;
+                throw new Error("División por cero");
             }
             result = divide(a, b); 
             break;
         default:
-            alert("Operación no válida");
             stack.push(a, b); 
-            return;
+            throw new Error("Operación no válida");
     }
 
     stack.push(result); 
     updateDisplay(); 
 }
+
 function testPerformOperationSequence(sequence) {
     clearAll(); // limpiar antes de comenzar
 
     for (const token of sequence) {
         if (typeof token === "number") {
-            inputBuffer = token.toString(); // simular que se escribió el número
+            if (!Number.isInteger(token)) throw new Error("Solo se permiten números enteros");
+            inputBuffer = token.toString(); 
             enterNumber();
         } else if (["+", "-", "*", "/"].includes(token)) {
             performOperation(token);
         } else {
-            return "error"; // token no válido
+            throw new Error("error");
         }
     }
 
     if (stack.length !== 1) {
-        return "error";
+        throw new Error("error");
     }
 
     return stack[0];
 }
+
 
 // Metodo que controla la entrada por teclado
 document.addEventListener('keydown', (event) => {
