@@ -89,7 +89,7 @@ function hasEnoughOperands() {
 }
 
 function performOperation(op) {
-    enterNumber();
+    enterNumber(); 
 
     if (!hasEnoughOperands()) {
         alert("Faltan operandos para realizar el cálculo.");
@@ -102,30 +102,30 @@ function performOperation(op) {
 
     switch (op) {
         case '+':
-            result = a + b;
+            result = add(a, b);
             break;
         case '-':
-            result = a - b;
+            result = subtract(a, b); 
             break;
         case '*':
-            result = a * b;
+            result = multiply(a, b); 
             break;
         case '/':
             if (b === 0) {
                 alert("Error: División por cero");
-                stack.push(a, b);
+                stack.push(a, b); 
                 return;
             }
-            result = Math.floor(a / b);
+            result = divide(a, b); 
             break;
         default:
             alert("Operación no válida");
-            stack.push(a, b);
+            stack.push(a, b); 
             return;
     }
 
-    stack.push(result);
-    updateDisplay();
+    stack.push(result); 
+    updateDisplay(); 
 }
 
 // Metodo que controla la entrada por teclado
@@ -163,6 +163,7 @@ function divide(a, b) {
     return a / b;
 }
 
+/*
 function evaluateRPN(tokens) {
     console.log(tokens);
     const stack = [];
@@ -198,16 +199,9 @@ function evaluateRPN(tokens) {
     if (stack.length !== 1) throw new Error("error");
     return stack[0];
 }
+*/
 
-// Simula el formateo de una cadena a notación RPN
-function formateoPila(expresion) {
-    if (typeof expresion !== 'string') return "error";
-    // Este ejemplo es estático, para testear
-    if (expresion === "9+6*3+4") return [9, 6, "+", 3, "*", 4, "+"];
-    return "error";
-}
-
-function calculo(tokens) {
+function calculate(tokens) {
     try {
         return evaluateRPN(tokens);
     } catch {
@@ -221,7 +215,5 @@ module.exports = {
     multiply,
     divide,
     hasEnoughOperands,
-    evaluateRPN,
-    calculo,
-    formateoPila
+    calculate
 };
