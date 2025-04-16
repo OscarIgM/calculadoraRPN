@@ -4,8 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "jest",
-    "testcoverage": "jest --coverage"
+    "test": "jest --coverage --collectCoverageFrom='./**/*.{js,jsx}' --testMatch='**/test/**/*.spec.js' --env=jsdom"
   },
   "author": "",
   "license": "ISC",

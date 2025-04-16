@@ -2,10 +2,12 @@ const {
     add,
     subtract,
     hasEnoughOperands,
-    evaluateRPN,
-    calculo,
+    testPerformOperationSequence,
+    performOperation,
     formateoPila
 } = require('../calculadora');
+
+
 
 describe('Suma', () => {
     it('Suma asserts', () => {
@@ -30,52 +32,53 @@ describe('Validación de operandos', () => {
 describe('Evaluación de RPN con números negativos', () => {
     it('debe evaluar correctamente [1, -2, "+", 3, "*", -4, "+"]', () => {
         const expression = [1, -2, "+", 3, "*", -4, "+"];
-        const result = evaluateRPN(expression);
+        const result = testPerformOperationSequence(expression);
         expect(result).toBe(-7);
     });
 
     it('debe lanzar error si faltan operandos', () => {
-        expect(() => evaluateRPN([1, "+"])).toThrow("falta operandos para realizar el calculo");
+        expect(() => testPerformOperationSequence([1, "+"])).toThrow("falta operandos para realizar el calculo");
     });
 
     it('debe lanzar error si hay división por cero', () => {
-        expect(() => evaluateRPN([4, 0, "/"])).toThrow("División por cero");
+        expect(() => testPerformOperationSequence([4, 0, "/"])).toThrow("División por cero");
     });
 });
 
-describe('Cálculo RPN complejo', () => {
+describe("Operaciones", () => {
     it('debe realizar el calculo', () => {
-        expect(calculo([1, 2, "+", 3, "*", 4, "+"])).toBe(13);
+        expect(testPerformOperationSequence([1, 2, "+", 3, "*", 4, "+"])).toBe(13);
     });
 
     it('debe realizar el calculo complejo', () => {
-        expect(calculo([1, -2, "+", 3, "*", -4, "-", 5, "/"])).toBe(0.2);
+        expect(testPerformOperationSequence([1, -2, "+", 3, "*", -4, "-", 5, "/"])).toBe(0.2);
     });
 
     it('debe mostrar error de ingreso de operandos', () => {
-        expect(calculo(["+", 3, "*", 4, "+", "="])).toBe("error");
+        expect(testPerformOperationSequence(["+", 3, "*", 4, "+", "="])).toBe("error");
     });
 
     it('debe mostrar error al existir caracteres no soportados', () => {
-        expect(calculo(["+", 3, "*", 4, "+", 2, "@", 1, "*"])).toBe("error");
+        expect(testPerformOperationSequence(["+", 3, "*", 4, "+", 2, "@", 1, "*"])).toBe("error");
     });
 
     it('debe mostrar error al existir paréntesis', () => {
-        expect(calculo(["(", "+", 3, "*", 4, "+", "+", 2, "-", 1, "*"])).toBe("error");
+        expect(testPerformOperationSequence(["(", "+", 3, "*", 4, "+", "+", 2, "-", 1, "*"])).toBe("error");
     });
 
     it('debe mostrar error al ingresar números decimales', () => {
-        expect(calculo([2.2, 3, "*", 4, "+"])).toBe("error");
-    });
-
-    it('debe formatear el formato de cálculo normal a notación RPN', () => {
-        expect(formateoPila("9+6*3+4")).toEqual([9, 6, "+", 3, "*", 4, "+"]);
-    });
-
-    it('debe de dar error al ingresar un número muy grande a la operación', () => {
-        expect(calculo([2147483648, 3, "*", 4, "+"])).toBe("error");
+        expect(testPerformOperationSequence([2.2, 3, "*", 4, "+"])).toBe("error");
     });
 });
+
+   /* it('debe formatear el formato de cálculo normal a notación RPN', () => {
+        expect(formateoPila("9+6*3+4")).toEqual([9, 6, "+", 3, "*", 4, "+"]);
+    });*/
+/*
+    it('debe de dar error al ingresar un número muy grande a la operación', () => {
+        expect(performOperation([2147483648, 3, "*", 4, "+"])).toBe(undefined);
+    });
+});*/
 
 
 

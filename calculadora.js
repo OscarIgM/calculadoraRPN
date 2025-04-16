@@ -1,6 +1,5 @@
 let stack = [];
 let inputBuffer = "";
-
 function updateDisplay() {
     const stackDisplay = document.getElementById("stack-display");
     stackDisplay.textContent = stack.join(" ");
@@ -134,6 +133,26 @@ function performOperation(op) {
     stack.push(result); 
     updateDisplay(); 
 }
+function testPerformOperationSequence(sequence) {
+    clearAll(); // limpiar antes de comenzar
+
+    for (const token of sequence) {
+        if (typeof token === "number") {
+            inputBuffer = token.toString(); // simular que se escribió el número
+            enterNumber();
+        } else if (["+", "-", "*", "/"].includes(token)) {
+            performOperation(token);
+        } else {
+            return "error"; // token no válido
+        }
+    }
+
+    if (stack.length !== 1) {
+        return "error";
+    }
+
+    return stack[0];
+}
 
 // Metodo que controla la entrada por teclado
 document.addEventListener('keydown', (event) => {
@@ -171,7 +190,7 @@ function divide(a, b) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Listeners para dígitos
+    // Listeners para digitos
     document.querySelectorAll('.digit').forEach(button => {
         button.addEventListener('click', () => {
             const digit = button.textContent.trim();
@@ -179,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Listeners para operaciones básicas
+    // Listeners para operaciones basicas
     document.querySelectorAll('.operation').forEach(button => {
         button.addEventListener('click', () => {
             const symbol = button.textContent.trim();
@@ -188,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Listener par botón de ENTER
+    // Listener par boton de ENTER
     const enterBtn = document.querySelector('.enter');
     if (enterBtn) {
         enterBtn.addEventListener('click', enterNumber);
@@ -228,6 +247,7 @@ module.exports = {
     dropItem,
     swapItems,
     duplicateItem,
+    testPerformOperationSequence,
     getStack: () => stack,
     setStack: (newStack) => { stack = newStack; },
     getInputBuffer: () => inputBuffer,
