@@ -242,7 +242,7 @@ function evaluateRPN(tokens) {
     if (stack.length !== 1) throw new Error("error");
     return stack[0];
 }
-*/
+
 
 function calculate(tokens) {
     try {
@@ -251,6 +251,7 @@ function calculate(tokens) {
         return "error";
     }
 }
+    */
 
 module.exports = {
     add,
