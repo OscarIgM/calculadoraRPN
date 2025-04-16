@@ -163,6 +163,49 @@ function divide(a, b) {
     return a / b;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Listeners para dígitos
+    document.querySelectorAll('.digit').forEach(button => {
+        button.addEventListener('click', () => {
+            const digit = button.textContent.trim();
+            appendDigit(parseInt(digit));
+        });
+    });
+
+    // Listeners para operaciones básicas
+    document.querySelectorAll('.operation').forEach(button => {
+        button.addEventListener('click', () => {
+            const symbol = button.textContent.trim();
+            const opMap = { '×': '*', '−': '-', '+': '+', '/': '/' };
+            performOperation(opMap[symbol] || symbol);
+        });
+    });
+
+    // Listener par botón de ENTER
+    const enterBtn = document.querySelector('.enter');
+    if (enterBtn) {
+        enterBtn.addEventListener('click', enterNumber);
+    }
+
+    // Listener para acciones a la pila
+    document.querySelectorAll('.function').forEach(button => {
+        const action = button.dataset.action;
+        if (!action) return;
+
+        button.addEventListener('click', () => {
+            switch (action) {
+                case 'dropItem': dropItem(); break;
+                case 'swapItems': swapItems(); break;
+                case 'duplicateItem': duplicateItem(); break;
+                case 'clearAll': clearAll(); break;
+                case 'clearInput': clearInput(); break;
+                case 'changeSign': changeSign(); break;
+                default: console.warn('Acción desconocida:', action);
+            }
+        });
+    });
+});
+
 /*
 function evaluateRPN(tokens) {
     console.log(tokens);
