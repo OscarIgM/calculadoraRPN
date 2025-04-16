@@ -21,6 +21,13 @@ function appendDigit(digit) {
 function enterNumber() {
     if (inputBuffer.trim() === "") return;
 
+    if (!/^-?\d+(\.\d+)?$/.test(inputBuffer)) {
+        alert("Solo se permiten números enteros.");
+        inputBuffer = "";
+        updateInputDisplay();
+        return;
+    }
+
     const value = parseFloat(inputBuffer);
 
     if (isNaN(value) || !Number.isInteger(value)) {
@@ -212,4 +219,17 @@ module.exports = {
     multiply,
     divide,
     hasEnoughOperands,
+    performOperation,
+    appendDigit,
+    enterNumber,
+    clearInput,
+    clearAll,
+    changeSign,
+    dropItem,
+    swapItems,
+    duplicateItem,
+    getStack: () => stack,
+    setStack: (newStack) => { stack = newStack; },
+    getInputBuffer: () => inputBuffer,
+    setInputBuffer: (val) => { inputBuffer = val; }
 };

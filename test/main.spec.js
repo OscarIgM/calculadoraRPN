@@ -1,15 +1,32 @@
-/**
- * @jest-environment jsdom
- */
+beforeEach(() => {
+    document.body.innerHTML = `
+        <div id="stack-display"></div>
+        <div id="input"></div>
+    `;
+});
 
 const calculadora = require('../calculadora.js');
+
 const {
     add,
     subtract,
     multiply,
     divide,
-    hasEnoughOperands
-} = require('./calculadora');
+    hasEnoughOperands,
+    performOperation,
+    appendDigit,
+    enterNumber,
+    clearInput,
+    clearAll,
+    changeSign,
+    dropItem,
+    swapItems,
+    duplicateItem,
+    setStack,
+    getStack,
+    setInputBuffer,
+    getInputBuffer
+} = calculadora;
 
 //Pruebas para operaciones matematicas
 describe('Operaciones matemáticas básicas', () => {
@@ -76,109 +93,233 @@ describe('Operaciones matemáticas básicas', () => {
 
 //Pruebas de validador de cantidad de operandos
 describe('Validación de operandos', () => {
-    it('debe retornar true cuando hay al menos 2 operandos', () => {
-        expect(hasEnoughOperands(2)).toBe(true);
-        expect(hasEnoughOperands(3)).toBe(true);
+    test('Debe retornar true con 2 operandos', () => {
+        setStack([1, 2]);
+        expect(hasEnoughOperands()).toBe(true);
     });
 
-    it('debe indicar que faltan operandos si hay menos de 2', () => {
-        expect(hasEnoughOperands(0)).toBe("falta operandos para realizar el calculo");
-        expect(hasEnoughOperands(1)).toBe("falta operandos para realizar el calculo");
+    test('Debe retornar false con menos de 2 operandos', () => {
+        setStack([1]);
+        expect(hasEnoughOperands()).toBe(false);
     });
 });
 
-//Pruebas para funciones de pila
-describe('Metodos de pila', () => {
-
-    test('swapItems muestra alerta si hay menos de 2 elementos', () => {
-        stack = [1];
-        window.alert = jest.fn();
+describe('Operaciones sobre la pila', () => {
+    test('swapItems alerta con menos de 2 elementos', () => {
+        setStack([1]);
+        global.alert = jest.fn();
         swapItems();
-        expect(stack).toEqual([1]);
-        expect(window.alert).toHaveBeenCalledWith("Se necesitan al menos dos elementos para intercambiar.");
+        expect(getStack()).toEqual([1]);
+        expect(global.alert).toHaveBeenCalledWith("Se necesitan al menos dos elementos para intercambiar.");
     });
 
-    test('swapItems intercambia los dos últimos elementos', () => {
-        stack = [1, 2];
+    test('swapItems intercambia los dos últimos', () => {
+        setStack([1, 2]);
         swapItems();
-        expect(stack).toEqual([2, 1]);
+        expect(getStack()).toEqual([2, 1]);
     });
 
-    test('duplicateItem duplica el último elemento de la pila', () => {
-        stack = [5];
+    test('duplicateItem duplica el último elemento', () => {
+        setStack([5]);
         duplicateItem();
-        expect(stack).toEqual([5, 5]);
+        expect(getStack()).toEqual([5, 5]);
     });
 
     test('duplicateItem alerta si la pila está vacía', () => {
-        stack = [];
-        window.alert = jest.fn();
+        setStack([]);
+        global.alert = jest.fn();
         duplicateItem();
-        expect(window.alert).toHaveBeenCalledWith("La pila está vacía.");
+        expect(global.alert).toHaveBeenCalledWith("La pila está vacía.");
     });
 
-    test('performOperation con división por cero no modifica la pila', () => {
-        stack = [4, 0];
-        window.alert = jest.fn();
+    test('dropItem elimina el último elemento', () => {
+        setStack([1, 2, 3]);
+        dropItem();
+        expect(getStack()).toEqual([1, 2]);
+    });
+});
+
+//Pruebas para el metodo encargado de la operacion
+describe('Operaciones realizadas sobre el contenido de la pila', () => {
+    test('División por cero no modifica la pila', () => {
+        setStack([4, 0]);
+        setInputBuffer('');
+        global.alert = jest.fn();
         performOperation('/');
-        expect(stack).toEqual([4, 0]);
-        expect(window.alert).toHaveBeenCalledWith("Error: División por cero");
+        expect(getStack()).toEqual([4, 0]);
+        expect(global.alert).toHaveBeenCalledWith("Error: División por cero");
     });
 
-    test('performOperation con operador fuera de los cuatro operadores básicos muestra alerta', () => {
-        stack = [1, 2];
-        window.alert = jest.fn();
+    test('Operador distinto a los 4 operadores basicos alerta y no modifica la pila', () => {
+        setStack([1, 2]);
+        setInputBuffer('');
+        global.alert = jest.fn();
         performOperation('%');
-        expect(stack).toEqual([1, 2]);
-        expect(window.alert).toHaveBeenCalledWith("Operación no válida");
+        expect(getStack()).toEqual([1, 2]);
+        expect(global.alert).toHaveBeenCalledWith("Operación no válida");
+    });
+
+    test('Suma válida modifica la pila', () => {
+        setStack([2, 3]);
+        setInputBuffer('');
+        performOperation('+');
+        expect(getStack()).toEqual([5]);
+    });
+});
+
+//Pruebas para el ingreso en input
+describe('Ingreso de digitos en el input', () => {
+    test('Agrega un dígito al inputBuffer', () => {
+        setInputBuffer('');
+        appendDigit(7);
+        expect(getInputBuffer()).toBe('7');
+    });
+
+    test('Concatena múltiples dígitos', () => {
+        setInputBuffer('3');
+        appendDigit(5);
+        expect(getInputBuffer()).toBe('35');
+    });
+
+    test('Actualiza el DOM correctamente', () => {
+        setInputBuffer('');
+        appendDigit(9);
+        const inputDisplay = document.getElementById('input');
+        expect(inputDisplay.textContent).toBe('9');
+    });
+});
+
+//pruebas para el ingreso de elementos a la pila
+describe('Ingreso de elementos a la pila', () => {
+    test('Agrega el número a la pila si es válido', () => {
+        setStack([]);
+        setInputBuffer('42');
+        enterNumber();
+        expect(getStack()).toEqual([42]);
+        expect(getInputBuffer()).toBe('');
+    });
+
+    test('No hace nada si inputBuffer está vacío', () => {
+        setStack([]);
+        setInputBuffer('');
+        enterNumber();
+        expect(getStack()).toEqual([]);
+    });
+
+    test('Alerta si el input no es número entero - decimales', () => {
+        global.alert = jest.fn();
+        setInputBuffer('4.2');
+        enterNumber();
+        expect(global.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+        expect(getInputBuffer()).toBe('');
+    });
+
+    test('Alerta si el input no es número entero - letras', () => {
+        global.alert = jest.fn();
+        setInputBuffer('abc');
+        enterNumber();
+        expect(global.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+        expect(getInputBuffer()).toBe('');
+        expect(getStack()).toEqual([]);
+    });
+
+    test('Alerta si el input no es número entero - símbolos', () => {
+        global.alert = jest.fn();
+        setInputBuffer('@#$');
+        enterNumber();
+        expect(global.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+        expect(getInputBuffer()).toBe('');
+        expect(getStack()).toEqual([]);
+    });
+
+    test('Actualiza correctamente el DOM al ingresar número', () => {
+        setStack([]);
+        setInputBuffer('10');
+        enterNumber();
+        expect(document.getElementById('stack-display').textContent).toBe('10');
+        expect(document.getElementById('input').textContent).toBe('');
     });
 });
 
 
-//Pruebas para ingreso a la pila por input
-describe('appendDigit y enterNumber', () => {
-    beforeEach(() => {
-        document.body.innerHTML = `
-        <div id="input"></div>
-        <div id="stack-display"></div>
-      `;
-        global.stack = [];
-        global.inputBuffer = "";
+//Pruebas para el metodo que cambia el signo del valor en el input
+describe('cambio de signo de valor en el input', () => {
+    test('Agrega signo negativo si es positivo', () => {
+        setInputBuffer('12');
+        changeSign();
+        expect(getInputBuffer()).toBe('-12');
     });
 
-    test('appendDigit agrega dígitos al inputBuffer', () => {
-        appendDigit(1);
-        appendDigit(2);
-        expect(inputBuffer).toBe("12");
+    test('Elimina signo negativo si ya está presente', () => {
+        setInputBuffer('-7');
+        changeSign();
+        expect(getInputBuffer()).toBe('7');
     });
 
-    test('enterNumber ignora input con solo espacios', () => {
-        inputBuffer = "   ";
+    test('No cambia nada si el input está vacío', () => {
+        setInputBuffer('');
+        changeSign();
+        expect(getInputBuffer()).toBe('');
+    });
+
+    test('Actualiza el DOM con el nuevo valor', () => {
+        setInputBuffer('3');
+        changeSign();
+        expect(document.getElementById('input').textContent).toBe('-3');
+    });
+});
+
+
+//Pruebas para metodo que borra valor en el input
+describe('Limpiar input', () => {
+    test('Limpia el inputBuffer', () => {
+        setInputBuffer('123');
+        clearInput();
+        expect(getInputBuffer()).toBe('');
+    });
+
+    test('Actualiza el DOM', () => {
+        setInputBuffer('99');
+        clearInput();
+        expect(document.getElementById('input').textContent).toBe('');
+    });
+});
+
+//Pruebas para el metodo que limpia el input y la pila
+describe('Limpiar todo', () => {
+    test('Limpia inputBuffer y pila', () => {
+        setInputBuffer('456');
+        setStack([1, 2, 3]);
+        clearAll();
+        expect(getInputBuffer()).toBe('');
+        expect(getStack()).toEqual([]);
+    });
+
+    test('Actualiza el DOM', () => {
+        setInputBuffer('10');
+        setStack([5, 6]);
+        clearAll();
+        expect(document.getElementById('input').textContent).toBe('');
+        expect(document.getElementById('stack-display').textContent).toBe('');
+    });
+});
+
+//Pruebs de seguridad den input de la calculadora
+describe('Seguridad en la entrada de usuario', () => {
+
+    test('No debe ejecutar código inyectado en el input', () => {
+        global.alert = jest.fn();
+        setInputBuffer("2; alert('hack');");
         enterNumber();
-        expect(stack).toEqual([]);
+        expect(global.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+        expect(getStack()).toEqual([]);
     });
 
-    test('enterNumber agrega número entero al stack y limpia input', () => {
-        inputBuffer = "42";
-        enterNumber();
-        expect(stack).toEqual([42]);
-        expect(inputBuffer).toBe("");
-    });
-
-    test('enterNumber rechaza decimales', () => {
-        inputBuffer = "3.14";
-        window.alert = jest.fn();
-        enterNumber();
-        expect(stack).toEqual([]);
-        expect(window.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
-    });
-
-    test('enterNumber rechaza entrada no numérica', () => {
-        inputBuffer = "abc";
-        window.alert = jest.fn();
-        enterNumber();
-        expect(stack).toEqual([]);
-        expect(window.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+    test('Ignora caracteres inválidos desde el teclado', () => {
+        const event = new KeyboardEvent('keydown', { key: '<' });
+        global.alert = jest.fn();
+        document.dispatchEvent(event);
+        expect(getInputBuffer()).toBe("");
     });
 });
 
