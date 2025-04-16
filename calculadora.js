@@ -21,6 +21,13 @@ function appendDigit(digit) {
 function enterNumber() {
     if (inputBuffer.trim() === "") return;
 
+    if (!/^-?\d+(\.\d+)?$/.test(inputBuffer)) {
+        alert("Solo se permiten números enteros.");
+        inputBuffer = "";
+        updateInputDisplay();
+        return;
+    }
+
     const value = parseFloat(inputBuffer);
 
     if (isNaN(value) || !Number.isInteger(value)) {

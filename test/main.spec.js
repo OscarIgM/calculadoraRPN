@@ -304,6 +304,25 @@ describe('Limpiar todo', () => {
     });
 });
 
+//Pruebs de seguridad den input de la calculadora
+describe('Seguridad en la entrada de usuario', () => {
+
+    test('No debe ejecutar código inyectado en el input', () => {
+        global.alert = jest.fn();
+        setInputBuffer("2; alert('hack');");
+        enterNumber();
+        expect(global.alert).toHaveBeenCalledWith("Solo se permiten números enteros.");
+        expect(getStack()).toEqual([]);
+    });
+
+    test('Ignora caracteres inválidos desde el teclado', () => {
+        const event = new KeyboardEvent('keydown', { key: '<' });
+        global.alert = jest.fn();
+        document.dispatchEvent(event);
+        expect(getInputBuffer()).toBe("");
+    });
+});
+
 /*
 describe('resta', () => {
     it('debe restar dos numeros', () => {
