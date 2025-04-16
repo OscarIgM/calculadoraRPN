@@ -1,66 +1,150 @@
-function hasEnoughOperands(count) {
-    if (count < 2) {
-        return "falta operandos para realizar el calculo";
-    }
-    return true;
+let stack = [];
+let inputBuffer = "";
+
+function updateDisplay() {
+    const stackDisplay = document.getElementById("stack-display");
+    stackDisplay.textContent = stack.join(" ");
+
+    updateInputDisplay();
 }
 
+function updateInputDisplay() {
+    const inputDisplay = document.getElementById("input");
+    inputDisplay.textContent = inputBuffer;
+}
 
-function performOperation(op) {
-    ensureInputIsEntered();
+function appendDigit(digit) {
+    inputBuffer += digit.toString();
+    updateInputDisplay();
+}
 
-    if (!hasEnoughOperands()) return;
+function enterNumber() {
+    if (inputBuffer.trim() === "") return;
 
-    const b = stack.pop();
+    const value = parseFloat(inputBuffer);
+
+    if (isNaN(value) || !Number.isInteger(value)) {
+        alert("Solo se permiten números enteros.");
+        inputBuffer = "";
+        updateInputDisplay();
+        return;
+    }
+
+    stack.push(value);
+    inputBuffer = "";
+    updateDisplay();
+}
+
+function clearInput() {
+    inputBuffer = "";
+    updateInputDisplay();
+}
+
+function clearAll() {
+    stack = [];
+    inputBuffer = "";
+    updateDisplay();
+}
+
+function changeSign() {
+    if (inputBuffer.startsWith("-")) {
+        inputBuffer = inputBuffer.slice(1);
+    } else if (inputBuffer.length > 0) {
+        inputBuffer = "-" + inputBuffer;
+    }
+    updateInputDisplay();
+}
+
+function dropItem() {
+    stack.pop();
+    updateDisplay();
+}
+
+function swapItems() {
+    if (stack.length < 2) {
+        alert("Se necesitan al menos dos elementos para intercambiar.");
+        return;
+    }
+
     const a = stack.pop();
-
-    let result;
-
-    switch (op) {
-        case '+':
-            result = add(a, b);
-            break;
-        case '-':
-            result = subtract(a, b);
-            break;
-        case '*':
-            result = multiply(a, b);
-            break;
-        case '/':
-            result = divide(a, b);
-            break;
-        default:
-            alert(`Operación no soportada: ${op}`);
-            stack.push(a, b);
-            return;
-    }
-
-    if (result !== null && result !== undefined) {
-        stack.push(result);
-    }
+    const b = stack.pop();
+    stack.push(a);
+    stack.push(b);
 
     updateDisplay();
 }
 
-
-function add(a, b) {
-    return a + b;
-}
-
-function subtract(a, b) {
-    return a - b;
-}
-
-function multiply(a, b) {
-    return a * b;
-}
-
-function divide(a, b) {
-    if (b === 0) {
-        alert("Error: División por cero");
-        return null;
+function duplicateItem() {
+    if (stack.length === 0) {
+        alert("La pila está vacía.");
+        return;
     }
-    return a / b;
+
+    stack.push(stack[stack.length - 1]);
+    updateDisplay();
 }
 
-module.exports = { add, subtract, multiply, divide,hasEnoughOperands};
+function hasEnoughOperands() {
+    return stack.length >= 2;
+}
+
+function performOperation(op) {
+    enterNumber();
+
+    if (!hasEnoughOperands()) {
+        alert("Faltan operandos para realizar el cálculo.");
+        return;
+    }
+
+    const b = stack.pop();
+    const a = stack.pop();
+    let result;
+
+    switch (op) {
+        case '+':
+            result = a + b;
+            break;
+        case '-':
+            result = a - b;
+            break;
+        case '*':
+            result = a * b;
+            break;
+        case '/':
+            if (b === 0) {
+                alert("Error: División por cero");
+                stack.push(a, b);
+                return;
+            }
+            result = Math.floor(a / b);
+            break;
+        default:
+            alert("Operación no válida");
+            stack.push(a, b);
+            return;
+    }
+
+    stack.push(result);
+    updateDisplay();
+}
+
+// Metodo que controla la entrada por teclado
+document.addEventListener('keydown', (event) => {
+    const key = event.key;
+
+    if (/^\d$/.test(key)) {
+        appendDigit(parseInt(key));
+    } else if (['+', '-', '*', '/'].includes(key)) {
+        performOperation(key);
+    } else if (key === 'Enter') {
+        enterNumber();
+    } else if (key === 'Backspace') {
+        clearInput();
+    } else if (key === '.') {
+        event.preventDefault();
+        alert("No se permiten números decimales.");
+    } else {
+        // Ignorar cualquier otra tecla
+        event.preventDefault();
+    }
+});
