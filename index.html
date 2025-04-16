@@ -1,53 +1,153 @@
-<!--index.html-->
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <link rel="stylesheet" href="style.css">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <div class="calculator-container">
-        <div class="calculator">
-            <div class="display">
-                <div class="stack-display" id="stack-display"></div>
-                <div class="input" id="input"></div>
-            </div>
-            <div class="buttons">
-                <button class="digit" onclick="appendDigit(7)">7</button>
-                <button class="digit" onclick="appendDigit(8)">8</button>
-                <button class="digit" onclick="appendDigit(9)">9</button>
-                <button class="operation" onclick="performOperation('/')">/</button>
-                
-                <button class="digit" onclick="appendDigit(4)">4</button>
-                <button class="digit" onclick="appendDigit(5)">5</button>
-                <button class="digit" onclick="appendDigit(6)">6</button>
-                <button class="operation" onclick="performOperation('*')">×</button>
-                
-                <button class="digit" onclick="appendDigit(1)">1</button>
-                <button class="digit" onclick="appendDigit(2)">2</button>
-                <button class="digit" onclick="appendDigit(3)">3</button>
-                <button class="operation" onclick="performOperation('-')">−</button>
-                
-                <button class="digit" onclick="appendDigit(0)">0</button>
-                <button class="digit" onclick="appendDecimal()">.</button>
-                <button class="function" onclick="changeSign()">±</button>
-                <button class="operation" onclick="performOperation('+')">+</button>
-                
-                <button class="function" onclick="dropItem()">DROP</button>
-                <button class="function" onclick="swapItems()">SWAP</button>
-                <button class="function" onclick="duplicateItem()">DUP</button>
-                <button class="function" onclick="clearAll()">AC</button>
-                
-                <button class="enter" onclick="enterNumber()">ENTER</button>
-                <button class="function" onclick="clearInput()">⌫</button>
-            </div>
-        </div>
-        <div class="info">
-            <p>RPN Calculator: Enter numbers first, then operations</p>
-        </div>
-        <script src="calculadora.js"></script><!-- enlace a la calculadora-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RPN Calculator</title>
+ <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="calculator">
+    <div class="display">
+      <div id="stack-display"></div>
+      <div id="input">0</div>
     </div>
+    <div class="buttons">
+      <button class="digit" onclick="appendDigit(7)">7</button>
+      <button class="digit" onclick="appendDigit(8)">8</button>
+      <button class="digit" onclick="appendDigit(9)">9</button>
+      <button class="operation" onclick="performOperation('/')">/</button>
+
+      <button class="digit" onclick="appendDigit(4)">4</button>
+      <button class="digit" onclick="appendDigit(5)">5</button>
+      <button class="digit" onclick="appendDigit(6)">6</button>
+      <button class="operation" onclick="performOperation('*')">×</button>
+
+      <button class="digit" onclick="appendDigit(1)">1</button>
+      <button class="digit" onclick="appendDigit(2)">2</button>
+      <button class="digit" onclick="appendDigit(3)">3</button>
+      <button class="operation" onclick="performOperation('-')">−</button>
+
+      <button class="digit" onclick="appendDigit(0)">0</button>
+      <button class="digit" onclick="appendDecimal()">.</button>
+      <button class="function" onclick="changeSign()">±</button>
+      <button class="operation" onclick="performOperation('+')">+</button>
+
+      <button class="function" onclick="dropItem()">DROP</button>
+      <button class="function" onclick="swapItems()">SWAP</button>
+      <button class="function" onclick="duplicateItem()">DUP</button>
+      <button class="function" onclick="clearAll()">AC</button>
+
+      <button class="enter" onclick="enterNumber()">ENTER</button>
+      <button class="function" onclick="clearInput()">⌫</button>
+    </div>
+  </div>
+
+  <script>
+  
+    const { add, subtract, multiply, divide, evaluateRPN } = require('./calculadora')
+
+    // Estado de la calculadora
+    let stack = []
+    let input = "0"
+
+    // Actualiza la pantalla
+    function updateDisplay() {
+      document.getElementById("stack-display").textContent = stack.join(" ")
+      document.getElementById("input").textContent = input || "0"
+    }
+
+    // Funciones de los botones
+    function appendDigit(digit) {
+      if (input === "0") input = digit.toString()
+      else input += digit.toString()
+      updateDisplay()
+    }
+
+    function appendDecimal() {
+      if (!input.includes(".")) {
+        input += input ? "." : "0."
+      }
+      updateDisplay()
+    }
+
+    function clearInput() {
+      input = "0"
+      updateDisplay()
+    }
+
+    function enterNumber() {
+      const value = parseFloat(input)
+      if (!isNaN(value)) {
+        stack.push(value)
+        input = "0"
+        updateDisplay()
+      }
+    }
+
+    function performOperation(op) {
+      if (stack.length < 2) {
+        alert("Se necesitan al menos 2 números en la pila")
+        return
+      }
+
+      const b = stack.pop()
+      const a = stack.pop()
+      let result
+
+      switch (op) {
+        case '+': result = add(a, b); break
+        case '-': result = subtract(a, b); break
+        case '*': result = multiply(a, b); break
+        case '/': 
+          result = divide(a, b)
+          if (isNaN(result)) {
+            alert("No se puede dividir por cero")
+            stack.push(a, b)
+            return
+          }
+          break
+      }
+
+      stack.push(result)
+      updateDisplay()
+    }
+
+    function dropItem() {
+      if (stack.length > 0) stack.pop()
+      updateDisplay()
+    }
+
+    function swapItems() {
+      if (stack.length >= 2) {
+        const a = stack.pop()
+        const b = stack.pop()
+        stack.push(a, b)
+      }
+      updateDisplay()
+    }
+
+    function duplicateItem() {
+      if (stack.length > 0) {
+        stack.push(stack[stack.length - 1])
+      }
+      updateDisplay()
+    }
+
+    function clearAll() {
+      stack = []
+      input = "0"
+      updateDisplay()
+    }
+
+    function changeSign() {
+      if (input && input !== "0") {
+        input = input.startsWith("-") ? input.substring(1) : "-" + input
+      }
+      updateDisplay()
+    }
+
+    // Inicializa la pantalla
+    updateDisplay()
+  </script>
+</body>
 </html>
