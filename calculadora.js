@@ -212,4 +212,17 @@ module.exports = {
     multiply,
     divide,
     hasEnoughOperands,
+    performOperation,
+    appendDigit,
+    enterNumber,
+    clearInput,
+    clearAll,
+    changeSign,
+    dropItem,
+    swapItems,
+    duplicateItem,
+    getStack: () => stack,
+    setStack: (newStack) => { stack = newStack; },
+    getInputBuffer: () => inputBuffer,
+    setInputBuffer: (val) => { inputBuffer = val; }
 };
